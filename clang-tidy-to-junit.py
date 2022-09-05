@@ -45,16 +45,17 @@ class ClangTidyConverter:
             error_count = len(errors)
 
             # Each file gets a test-suite
-            output_file.write("""\n    <testsuite errors="{error_count}" name="{file}" tests="{error_count}" failures="0" time="0">\n"""
+            output_file.write("""\n    <testsuite errors="{error_count}" id="{file}" name="{file}" tests="{error_count}" failures="0" time="0">\n"""
                               .format(error_count=error_count, file=file))
             for error in errors:
                 # Write each error as a test case.
                 output_file.write("""
-        <testcase id="{id}" name="{id}" time="0">
+        <testcase id="{id}" name="{id}" file="{file}" time="0">
             <failure message="{message}">
 {htmldata}
             </failure>
         </testcase>""".format(id="[{}/{}] {}".format(error.line, error.column, error.error_identifier),
+                              file=file,
                               message=escape(error.error, entities={"\"": "&quot;"}),
                               htmldata=escape(error.description)))
             output_file.write("\n    </testsuite>\n")
@@ -115,3 +116,4 @@ if __name__ == "__main__":
         sys.exit(1)
     converter = ClangTidyConverter(sys.argv[1])
     converter.convert(sys.stdin, sys.stdout)
+
