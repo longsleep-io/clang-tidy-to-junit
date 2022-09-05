@@ -50,11 +50,12 @@ class ClangTidyConverter:
             for error in errors:
                 # Write each error as a test case.
                 output_file.write("""
-        <testcase id="{id}" name="{id}" file="{file}" time="0">
+        <testcase id="{id}" name="{id}" file="{file}#L{line}" time="0">
             <failure message="{message}">
 {htmldata}
             </failure>
         </testcase>""".format(id="[{}/{}] {}".format(error.line, error.column, error.error_identifier),
+                              line=error.line,
                               file=file,
                               message=escape(error.error, entities={"\"": "&quot;"}),
                               htmldata=escape(error.description)))
